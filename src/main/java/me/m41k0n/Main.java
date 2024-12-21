@@ -1,6 +1,7 @@
 package me.m41k0n;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import me.m41k0n.actions.ExitApplicationAction;
 import me.m41k0n.actions.NonFollowers;
 import me.m41k0n.actions.Welcome;
 import me.m41k0n.service.APIConsume;
@@ -10,7 +11,7 @@ import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class Main {
-    public static void main(String[] args) throws JsonProcessingException {
+    public static void main(String[] args) {
         final HttpClient client = HttpClient.newHttpClient();
         final APIConsume apiConsume = new APIConsume(client);
 
@@ -18,6 +19,7 @@ public class Main {
 
         MenuContext context = new MenuContext();
         context.setAction(1, new NonFollowers(apiConsume));
+        context.setAction(0, new ExitApplicationAction());
         showMenu(context);
     }
 
