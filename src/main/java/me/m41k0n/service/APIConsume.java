@@ -8,6 +8,7 @@ import java.net.http.HttpResponse;
 
 public class APIConsume {
     private final HttpClient client;
+    private static final String TOKEN = System.getenv("GITHUB_TOKEN");
 
     public APIConsume(HttpClient client) {
         this.client = client;
@@ -16,7 +17,11 @@ public class APIConsume {
     public String getData(String url) {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(url))
+                .header("Accept", "application/vnd.github+json")
+                .header("Authorization", "Bearer " + TOKEN)
+                .header("X-GitHub-Api-Version", "2022-11-28")
                 .build();
+
         HttpResponse<String> response;
 
         try {
