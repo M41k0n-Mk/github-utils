@@ -1,5 +1,6 @@
 package me.m41k0n;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import me.m41k0n.actions.MenuAction;
 
 import java.util.HashMap;
@@ -12,7 +13,7 @@ public class MenuContext {
         actions.put(choice, action);
     }
 
-    public void executeAction(int choice) {
+    public void executeAction(int choice) throws JsonProcessingException {
         MenuAction action = actions.get(choice);
         if (action != null) {
             action.execute();
