@@ -18,7 +18,7 @@ public class MenuContext {
         if (action != null) {
             action.execute();
         } else {
-            System.out.println("Não existe essa opção no menu");
+            System.out.println("Não existe essa opção no menu. Digite somente os números listados para cada opção no menu abaixo:\n");
         }
     }
 }
