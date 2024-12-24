@@ -2,7 +2,8 @@ package me.m41k0n;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import me.m41k0n.actions.ExitApplicationAction;
-import me.m41k0n.actions.NonFollowers;
+import me.m41k0n.actions.NonFollowersCommand;
+import me.m41k0n.actions.UnfollowCommand;
 import me.m41k0n.actions.Welcome;
 import me.m41k0n.service.APIConsume;
 
@@ -16,9 +17,11 @@ public class Main {
         final APIConsume apiConsume = new APIConsume(client);
 
         new Welcome(apiConsume);
+        NonFollowersCommand nonFollowersCommand = new NonFollowersCommand(apiConsume);
 
         MenuContext context = new MenuContext();
-        context.setAction(1, new NonFollowers(apiConsume));
+        context.setAction(1, nonFollowersCommand);
+        context.setAction(2, new UnfollowCommand(apiConsume, nonFollowersCommand));
         context.setAction(0, new ExitApplicationAction());
         showMenu(context);
     }
@@ -31,7 +34,7 @@ public class Main {
             try {
                 var menu = """
                         1 - Obter uma lista de quem você segue mas não segue você
-                        
+                        2 - Dar unfollow em todos que não te seguem
                         0 - Sair
                         """;
 
