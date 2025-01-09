@@ -34,7 +34,7 @@ public class NonFollowersCommand implements MenuAction<List<User>> {
     }
 
     private List<User> getFollowing() throws JsonProcessingException {
-        String following = apiConsume.getData(GitHubURL.FOLLOWING.getUrl());
+        String following = apiConsume.getData(GitHubURL.FOLLOWING.getUrl() + "?per_page=100");
         return mapper.readValue(following, new TypeReference<>() {
         });
     }
