@@ -6,25 +6,14 @@ import me.m41k0n.actions.NonFollowersCommand;
 import me.m41k0n.actions.UnfollowCommand;
 import me.m41k0n.actions.Welcome;
 import me.m41k0n.service.APIConsume;
-import org.springframework.boot.SpringApplication;
-import org.springframework.context.ConfigurableApplicationContext;
 
 import java.net.http.HttpClient;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class Main {
-    public static void main(String[] args) {
-        if (args.length > 0 && args[0].equals("--menu")) {
-            // Menu mode
-            runMenuMode();
-        } else {
-            // API mode (Spring Boot)
-            SpringApplication.run(Application.class, args);
-        }
-    }
-
-    private static void runMenuMode() {
+    
+    public static void runMenuMode() {
         final HttpClient client = HttpClient.newHttpClient();
         final APIConsume apiConsume = new APIConsume(client);
 
