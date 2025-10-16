@@ -1,7 +1,8 @@
 package me.m41k0n;
 
 public enum GitHubURL {
-    FOLLOWERS("https://api.github.com/user/followers?per_page=100"),
+
+    FOLLOWERS("https://api.github.com/user/followers"),
     FOLLOWING("https://api.github.com/user/following");
 
     private final String url;

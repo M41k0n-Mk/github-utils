@@ -10,6 +10,7 @@ import java.net.http.HttpResponse;
 
 @Component
 public class APIConsume {
+
     private final HttpClient client;
     private static final String TOKEN = System.getenv("GITHUB_TOKEN");
 
