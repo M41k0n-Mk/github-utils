@@ -1,0 +1,56 @@
+nohup: ignoring input
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] -----------------------< me.m41k0n:github-utils >-----------------------
+[INFO] Building github-utils 1.0-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] >>> spring-boot:3.1.5:run (default-cli) > test-compile @ github-utils >>>
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ github-utils ---
+[INFO] Copying 1 resource from src/main/resources to target/classes
+[INFO] Copying 0 resource from src/main/resources to target/classes
+[INFO] 
+[INFO] --- compiler:3.11.0:compile (default-compile) @ github-utils ---
+[INFO] Nothing to compile - all classes are up to date
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ github-utils ---
+[INFO] skip non existing resourceDirectory /workspaces/github-utils/src/test/resources
+[INFO] 
+[INFO] --- compiler:3.11.0:testCompile (default-testCompile) @ github-utils ---
+[INFO] No sources to compile
+[INFO] 
+[INFO] <<< spring-boot:3.1.5:run (default-cli) < test-compile @ github-utils <<<
+[INFO] 
+[INFO] 
+[INFO] --- spring-boot:3.1.5:run (default-cli) @ github-utils ---
+[INFO] Attaching agents: []
+🌐 Iniciando GitHub Utils em modo API...
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+ :: Spring Boot ::                (v3.1.5)
+
+2025-10-22T06:26:15.724Z  INFO 44832 --- [           main] me.m41k0n.Application                    : Starting Application using Java 17.0.2 with PID 44832 (/workspaces/github-utils/target/classes started by codespace in /workspaces/github-utils)
+2025-10-22T06:26:15.731Z DEBUG 44832 --- [           main] me.m41k0n.Application                    : Running with Spring Boot v3.1.5, Spring v6.0.13
+2025-10-22T06:26:15.733Z  INFO 44832 --- [           main] me.m41k0n.Application                    : No active profile set, falling back to 1 default profile: "default"
+2025-10-22T06:26:16.460Z  INFO 44832 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port(s): 8080 (http)
+2025-10-22T06:26:16.466Z  INFO 44832 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2025-10-22T06:26:16.467Z  INFO 44832 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.15]
+2025-10-22T06:26:16.551Z  INFO 44832 --- [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2025-10-22T06:26:16.552Z  INFO 44832 --- [           main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 760 ms
+2025-10-22T06:26:16.919Z  INFO 44832 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 8080 (http) with context path ''
+2025-10-22T06:26:16.926Z  INFO 44832 --- [           main] me.m41k0n.Application                    : Started Application in 1.604 seconds (process running for 1.907)
+2025-10-22T06:26:32.383Z  INFO 44832 --- [nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-10-22T06:26:32.383Z  INFO 44832 --- [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2025-10-22T06:26:32.384Z  INFO 44832 --- [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms
+🔄 Getting complete followers and following lists...
+🔄 Fetching all followers with pagination...
+📄 Fetching followers page 1
+🔄 Fetching all followers with pagination...
+📄 Fetching followers page 1

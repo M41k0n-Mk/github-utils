@@ -76,7 +76,7 @@ Main.java
 ```
 GitHubController.java
 ├── GET  /api/followers/health
-├── GET  /api/followers/non-followers
+├── GET  /api/non-followers
 └── DELETE /api/followers/unfollow-non-followers
 ```
 

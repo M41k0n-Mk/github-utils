@@ -65,8 +65,8 @@ java -jar target/github-utils-1.0-SNAPSHOT.jar --menu
 java -jar target/github-utils-1.0-SNAPSHOT.jar
 
 # Terminal 2: Teste os endpoints
-curl http://localhost:8080/api/followers/health
-curl http://localhost:8080/api/followers/non-followers
+curl http://localhost:8080/api/health
+curl http://localhost:8080/api/non-followers
 ```
 
 ---
@@ -104,10 +104,10 @@ mvn spring-boot:run -Dspring-boot.run.arguments="--menu"  # Menu
 curl http://localhost:8080/api/followers/health
 
 # Ver não-seguidores
-curl http://localhost:8080/api/followers/non-followers
+curl http://localhost:8080/api/non-followers
 
 # Unfollow (cuidado!)
-curl -X DELETE http://localhost:8080/api/followers/unfollow-non-followers
+curl -X DELETE http://localhost:8080/api/unfollow-non-followers
 ```
 
 ---

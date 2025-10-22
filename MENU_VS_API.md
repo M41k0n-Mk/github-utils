@@ -56,7 +56,7 @@ java -jar github-utils.jar
 nohup java -jar github-utils.jar &
 
 # Script automatizado
-curl http://localhost:8080/api/followers/non-followers | \
+curl http://localhost:8080/api/non-followers | \
   jq '.count' | \
   mail -s "Você tem X não-seguidores" seu@email.com
 ```

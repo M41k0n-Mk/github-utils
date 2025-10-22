@@ -12,7 +12,21 @@ import java.net.http.HttpClient;
 public class Application {
 
     public static void main(String[] args) {
-        if (args.length > 0 && "--menu".equals(args[0])) {
+        // Parse CLI flags for menu and dry-run
+        boolean menuMode = false;
+        boolean dryRun = false;
+        for (String arg : args) {
+            if ("--menu".equals(arg)) menuMode = true;
+            if ("--dry-run".equals(arg)) dryRun = true;
+        }
+
+        if (dryRun) {
+            // expose to Spring and manual instantiation paths via system property
+            System.setProperty("app.dryRun", "true");
+            System.out.println("\u2139\ufe0f Running in DRY-RUN mode: no writes will be performed");
+        }
+
+        if (menuMode) {
             runMenuMode();
         } else {
             runApiMode(args);

@@ -27,7 +27,7 @@ Verifica se a API está funcionando corretamente.
 ### 2. Listar Não-Seguidores
 Retorna uma lista de usuários que você segue mas que não te seguem de volta.
 
-**Endpoint:** `GET /api/followers/non-followers`
+**Endpoint:** `GET /api/non-followers`
 
 **Headers Required:**
 - Nenhum (o token do GitHub é lido da variável de ambiente `GITHUB_TOKEN`)
@@ -113,7 +113,7 @@ curl http://localhost:8080/api/followers/health
 
 **Listar Não-Seguidores:**
 ```bash
-curl http://localhost:8080/api/followers/non-followers
+curl http://localhost:8080/api/non-followers
 ```
 
 **Unfollow em Massa:**
@@ -130,7 +130,7 @@ fetch('http://localhost:8080/api/followers/health')
   .then(data => console.log(data));
 
 // Listar Não-Seguidores
-fetch('http://localhost:8080/api/followers/non-followers')
+fetch('http://localhost:8080/api/non-followers')
   .then(response => response.json())
   .then(data => {
     console.log(`Total: ${data.count}`);
