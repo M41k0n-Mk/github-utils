@@ -122,7 +122,7 @@ GET http://localhost:8080/api/followers/health
 Retorna lista de usuários que você segue mas não te seguem de volta.
 
 ```http
-GET http://localhost:8080/api/followers/non-followers
+GET http://localhost:8080/api/non-followers
 ```
 
 **Resposta:**
@@ -169,7 +169,7 @@ A API possui CORS habilitado para permitir requisições de qualquer origem. Em 
 
 ```javascript
 // Listar não-seguidores
-fetch('http://localhost:8080/api/followers/non-followers')
+fetch('http://localhost:8080/api/non-followers')
   .then(response => response.json())
   .then(data => console.log(data));
 
@@ -189,7 +189,7 @@ import { HttpClient } from '@angular/common/http';
 constructor(private http: HttpClient) {}
 
 getNonFollowers() {
-  return this.http.get('http://localhost:8080/api/followers/non-followers');
+  return this.http.get('http://localhost:8080/api/non-followers');
 }
 
 unfollowNonFollowers() {
