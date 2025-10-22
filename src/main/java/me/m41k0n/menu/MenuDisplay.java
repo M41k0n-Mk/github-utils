@@ -10,7 +10,9 @@ public class MenuDisplay {
             ║                    GitHub Utils - Menu                       ║
             ╠══════════════════════════════════════════════════════════════╣
             ║ 1 - Listar usuários que você segue mas não te seguem        ║
-            ║ 2 - Dar unfollow em massa (não-seguidores)                  ║
+                ║ 2 - Dar unfollow em massa (não-seguidores)                  ║
+                ║ 3 - Preview paginado e export (CSV/JSON)                     ║
+                ║ 4 - Toggle dry-run (mostrar apenas o que seria feito)       ║
             ║ 0 - Sair                                                     ║
             ╚══════════════════════════════════════════════════════════════╝
             Digite sua opção: """;
