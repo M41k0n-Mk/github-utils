@@ -18,11 +18,13 @@ public class GitHubService {
 
     private final APIConsume apiConsume;
     private final DryRunService dryRunService;
+    private final HistoryService historyService;
     private final ObjectMapper mapper = new ObjectMapper();
 
-    public GitHubService(APIConsume apiConsume, DryRunService dryRunService) {
+    public GitHubService(APIConsume apiConsume, DryRunService dryRunService, HistoryService historyService) {
         this.apiConsume = apiConsume;
         this.dryRunService = dryRunService;
+        this.historyService = historyService;
     }
 
     public List<User> getNonFollowers() throws JsonProcessingException {
@@ -54,6 +56,7 @@ public class GitHubService {
         nonFollowers.forEach(user -> {
             System.out.println("Unfollowing: " + user.login());
             apiConsume.deleteData(GitHubURL.FOLLOWING.getUrl() + "/" + user.login());
+            historyService.record(user.login(), "unfollow", false, null);
         });
 
         System.out.println("✅ Mass unfollow completed");
@@ -83,6 +86,53 @@ public class GitHubService {
         List<User> page = from >= to ? new ArrayList<>() : nonFollowers.subList(from, to);
 
         return new PreviewReport(followers.size(), following.size(), totalNon, page, pageNumber, pageSize);
+    }
+
+    /**
+     * Fetch one page of following directly from GitHub (no DB persistence)
+     */
+    public List<User> getFollowing(int pageNumber, int pageSize) {
+        String url = GitHubURL.FOLLOWING.getUrl() + "?per_page=" + pageSize + "&page=" + pageNumber;
+        String response = apiConsume.getData(url);
+        try {
+            return mapper.readValue(response, new TypeReference<>() {});
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Erro ao processar resposta da API do GitHub", e);
+        }
+    }
+
+    /**
+     * Perform unfollow. Returns true when operation was dry-run.
+     */
+    public boolean unfollow(String username, String sourceListId) {
+        boolean dryRun = dryRunService.isDryRunEnabled();
+        if (!dryRun) {
+            int status = apiConsume.deleteStatus(GitHubURL.FOLLOWING.getUrl() + "/" + username);
+            if (status < 200 || status >= 300) {
+                throw new RuntimeException("GitHub API unfollow failed with status " + status);
+            }
+            historyService.record(username, "unfollow", false, sourceListId);
+        } else {
+            historyService.record(username, "unfollow", true, sourceListId);
+        }
+        return dryRun;
+    }
+
+    /**
+     * Perform follow. Returns true when operation was dry-run.
+     */
+    public boolean follow(String username, String sourceListId) {
+        boolean dryRun = dryRunService.isDryRunEnabled();
+        if (!dryRun) {
+            int status = apiConsume.putEmpty(GitHubURL.FOLLOWING.getUrl() + "/" + username);
+            if (status < 200 || status >= 300) {
+                throw new RuntimeException("GitHub API follow failed with status " + status);
+            }
+            historyService.record(username, "follow", false, sourceListId);
+        } else {
+            historyService.record(username, "follow", true, sourceListId);
+        }
+        return dryRun;
     }
 
     /**

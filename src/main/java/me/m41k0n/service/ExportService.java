@@ -13,13 +13,6 @@ import java.util.List;
  */
 @Service
 public class ExportService {
-    
-    private final ObjectMapper objectMapper;
-    
-    public ExportService(ObjectMapper objectMapper) {
-        this.objectMapper = objectMapper;
-    }
-    
     /**
      * Exports users list to JSON format with pretty printing.
      * Delegates to ExportUtils for consistency.

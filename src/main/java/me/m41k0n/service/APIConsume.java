@@ -28,7 +28,6 @@ public class APIConsume {
 
     public String getData(String url) {
         HttpRequest request = createRequestBuilder(url).build();
-
         HttpResponse<String> response;
 
         try {
@@ -58,5 +57,31 @@ public class APIConsume {
         }
 
         return response.body();
+    }
+
+    public int deleteStatus(String url) {
+        HttpRequest request = createRequestBuilder(url).DELETE().build();
+        try {
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            return response.statusCode();
+        } catch (IOException e) {
+            throw new RuntimeException("A requisição HTTP falhou", e);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException("A thread foi interrompida durante a request HTTP", e);
+        }
+    }
+
+    public int putEmpty(String url) {
+        HttpRequest request = createRequestBuilder(url).PUT(HttpRequest.BodyPublishers.noBody()).build();
+        try {
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            return response.statusCode();
+        } catch (IOException e) {
+            throw new RuntimeException("A requisição HTTP falhou", e);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException("A thread foi interrompida durante a request HTTP", e);
+        }
     }
 }
