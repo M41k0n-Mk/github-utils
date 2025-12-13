@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
+//TODO lists tb lá no front seta tudo no localstorage, não bate aqui na api do back
 @RestController
 @RequestMapping("/api/lists")
 @CrossOrigin(origins = "*")
@@ -57,7 +57,7 @@ public class ListController {
         listService.delete(id);
         return ResponseEntity.noContent().build();
     }
-
+//TODO não entendi muito bem esse apply
     @PostMapping("/{id}/apply")
     public ResponseEntity<Map<String, Object>> apply(@PathVariable String id,
                                                      @RequestParam String action,

@@ -30,7 +30,7 @@ public class HistoryService {
         String sinceIso = since != null ? since.toString() : null;
         return historyRepository.search(username, action, sinceIso);
     }
-
+//TODO ver esses 2 métodos se são usados
     public boolean alreadyProcessed(String username, String action) {
         return historyRepository.existsByUsernameAndActionAndDryRun(username, action, 0);
     }
