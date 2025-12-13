@@ -33,7 +33,7 @@ public class UserFollowingController {
         resp.put("users", users);
         return ResponseEntity.ok(resp);
     }
-
+//ok
     @DeleteMapping("/{username}")
     public ResponseEntity<Map<String, Object>> unfollow(@PathVariable String username) {
         boolean dryRun = gitHubService.unfollow(username, null);
@@ -42,7 +42,7 @@ public class UserFollowingController {
         resp.put("dryRun", dryRun);
         return ResponseEntity.ok(resp);
     }
-
+//ok
     @PutMapping("/{username}")
     public ResponseEntity<Map<String, Object>> follow(@PathVariable String username) {
         boolean dryRun = gitHubService.follow(username, null);

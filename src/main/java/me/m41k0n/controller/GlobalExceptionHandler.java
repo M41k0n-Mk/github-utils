@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
-
+//TODO mudar a classe de lugar, cirar um pacote só pra exception
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
