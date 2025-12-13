@@ -23,7 +23,7 @@ public class GitHubController {
         this.gitHubService = gitHubService;
         this.exportService = exportService;
     }
-
+//TODO duvida pq na aplicação front tem fazendo request p esse aqui mas com reuest params
     @GetMapping("/non-followers")
     public ResponseEntity<Map<String, Object>> getNonFollowers() {
         try {
@@ -39,7 +39,7 @@ public class GitHubController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
         }
     }
-
+//ok
     @GetMapping("/non-followers/preview")
     public ResponseEntity<?> previewNonFollowers(@RequestParam(defaultValue = "1") int page, @RequestParam(defaultValue = "25") int size, @RequestParam(required = false) String format) {
         try {
@@ -71,7 +71,7 @@ public class GitHubController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
         }
     }
-
+//ok
     @DeleteMapping("/unfollow-non-followers")
     public ResponseEntity<Map<String, String>> unfollowNonFollowers() {
         try {
