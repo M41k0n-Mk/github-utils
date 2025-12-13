@@ -8,6 +8,7 @@ import java.util.Scanner;
 import java.util.stream.Collectors;
 
 public class MassUnfollowCommand implements Command<Void> {
+
     private final GitHubService gitHubService;
 
     public MassUnfollowCommand(GitHubService gitHubService) {

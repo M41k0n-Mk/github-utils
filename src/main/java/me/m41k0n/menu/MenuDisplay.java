@@ -1,5 +1,7 @@
 package me.m41k0n.menu;
 
+import me.m41k0n.command.MenuController;
+
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
@@ -9,13 +11,13 @@ public class MenuDisplay {
             ╔══════════════════════════════════════════════════════════════╗
             ║                    GitHub Utils - Menu                       ║
             ╠══════════════════════════════════════════════════════════════╣
-            ║ 1 - Listar usuários que você segue mas não te seguem        ║
-                ║ 2 - Dar unfollow em massa (não-seguidores)                  ║
-                ║ 3 - Preview paginado e export (CSV/JSON)                     ║
-                ║ 4 - Toggle dry-run (mostrar apenas o que seria feito)       ║
+            ║ 1 - Listar usuários que você segue mas não te seguem         ║
+            ║ 2 - Dar unfollow em massa (não-seguidores)                   ║
+            ║ 3 - Preview paginado e export (CSV/JSON)                     ║
+            ║ 4 - Toggle dry-run (mostrar apenas o que seria feito)        ║
             ║ 0 - Sair                                                     ║
             ╚══════════════════════════════════════════════════════════════╝
-            Digite sua opção: """;
+            Digite sua opção:\s""";
 
     private final MenuController menuController;
     private final Scanner scanner = new Scanner(System.in);

@@ -1,10 +1,13 @@
 package me.m41k0n;
 
-import me.m41k0n.factory.MenuFactory;
+import me.m41k0n.command.MenuFactory;
 import me.m41k0n.menu.MenuDisplay;
 import me.m41k0n.service.APIConsume;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.context.ApplicationContext;
 
 import java.net.http.HttpClient;
 
@@ -27,17 +30,23 @@ public class Application {
         }
 
         if (menuMode) {
-            runMenuMode();
+            runMenuMode(args);
         } else {
             runApiMode(args);
         }
     }
 
-    private static void runMenuMode() {
+    private static void runMenuMode(String[] args) {
         System.out.println("🚀 Iniciando GitHub Utils em modo Menu...\n");
 
         showWelcome();
-        MenuDisplay menu = MenuFactory.createMenu();
+
+        // Bootstrap Spring without web server and use beans for services
+        ApplicationContext context = new SpringApplicationBuilder(Application.class)
+                .web(WebApplicationType.NONE)
+                .run(args);
+
+        MenuDisplay menu = MenuFactory.createMenu(context);
         menu.show();
 
         System.out.println("👋 Aplicação encerrada. Até logo!");

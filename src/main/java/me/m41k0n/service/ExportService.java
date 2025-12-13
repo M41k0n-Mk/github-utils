@@ -1,10 +1,9 @@
 package me.m41k0n.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import me.m41k0n.entity.HistoryEntity;
 import me.m41k0n.model.User;
 import org.springframework.stereotype.Service;
 
-import java.io.StringWriter;
 import java.util.List;
 
 /**
@@ -13,13 +12,6 @@ import java.util.List;
  */
 @Service
 public class ExportService {
-    
-    private final ObjectMapper objectMapper;
-    
-    public ExportService(ObjectMapper objectMapper) {
-        this.objectMapper = objectMapper;
-    }
-    
     /**
      * Exports users list to JSON format with pretty printing.
      * Delegates to ExportUtils for consistency.
@@ -35,7 +27,7 @@ public class ExportService {
     public String exportToCsv(List<User> users) {
         return ExportUtils.toCsv(users);
     }
-    
+
     /**
      * Exports users list to specified format.
      */
@@ -45,24 +37,39 @@ public class ExportService {
             case JSON -> exportToJson(users);
         };
     }
-    
+
+    public String exportHistoryToJson(List<HistoryEntity> items) throws Exception {
+        return ExportUtils.historyToJson(items);
+    }
+
+    public String exportHistoryToCsv(List<HistoryEntity> items) {
+        return ExportUtils.historyToCsv(items);
+    }
+
+    public String exportHistoryToFormat(List<HistoryEntity> items, ExportFormat format) throws Exception {
+        return switch (format) {
+            case CSV -> exportHistoryToCsv(items);
+            case JSON -> exportHistoryToJson(items);
+        };
+    }
+
     /**
      * Supported export formats
      */
     public enum ExportFormat {
         CSV("text/csv"),
         JSON("application/json");
-        
+
         private final String mimeType;
-        
+
         ExportFormat(String mimeType) {
             this.mimeType = mimeType;
         }
-        
+
         public String getMimeType() {
             return mimeType;
         }
-        
+
         public static ExportFormat fromString(String format) {
             if (format == null) return null;
             return switch (format.toLowerCase()) {

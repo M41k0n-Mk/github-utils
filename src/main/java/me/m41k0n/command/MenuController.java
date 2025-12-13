@@ -1,7 +1,6 @@
-package me.m41k0n.menu;
+package me.m41k0n.command;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import me.m41k0n.command.Command;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -1,0 +1,59 @@
+package me.m41k0n.controller;
+
+import me.m41k0n.entity.HistoryEntity;
+import me.m41k0n.service.HistoryService;
+import me.m41k0n.service.ExportService;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.time.Instant;
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/history")
+@CrossOrigin(origins = "*")
+public class HistoryController {
+
+    private final HistoryService historyService;
+    private final ExportService exportService;
+
+    public HistoryController(HistoryService historyService, ExportService exportService) {
+        this.historyService = historyService;
+        this.exportService = exportService;
+    }
+//history lá no frontend parece que pega do cache não bate no endpoint aqui
+    @GetMapping
+    public ResponseEntity<List<HistoryEntity>> getHistory(@RequestParam(required = false) String username,
+                                                          @RequestParam(required = false) String action,
+                                                          @RequestParam(required = false) String since) {
+        Instant sinceInstant = since != null && !since.isBlank() ? Instant.parse(since) : null;
+        return ResponseEntity.ok(historyService.search(username, action, sinceInstant));
+    }
+
+    @GetMapping("/export")
+    public ResponseEntity<?> exportHistory(@RequestParam(required = false) String username,
+                                           @RequestParam(required = false) String action,
+                                           @RequestParam(required = false) String since,
+                                           @RequestParam(defaultValue = "csv") String format) {
+        try {
+            Instant sinceInstant = since != null && !since.isBlank() ? Instant.parse(since) : null;
+            List<HistoryEntity> items = historyService.search(username, action, sinceInstant);
+
+            var exportFormat = me.m41k0n.service.ExportService.ExportFormat.fromString(format);
+            if (exportFormat == null) {
+                return ResponseEntity.badRequest().body("Formato inválido. Use csv ou json.");
+            }
+
+            String body = exportService.exportHistoryToFormat(items, exportFormat);
+            String disposition = String.format("attachment; filename=history-%s.%s",
+                    action == null ? "all" : action,
+                    format.toLowerCase());
+            return ResponseEntity.ok()
+                    .header("Content-Type", exportFormat.getMimeType())
+                    .header("Content-Disposition", disposition)
+                    .body(body);
+        } catch (Exception ex) {
+            return ResponseEntity.internalServerError().body("Erro ao exportar histórico: " + ex.getMessage());
+        }
+    }
+}
