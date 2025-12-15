@@ -13,6 +13,8 @@ public class APIConsume {
 
     private final HttpClient client;
     private static final String TOKEN = System.getenv("GITHUB_TOKEN");
+    private static final String HTTP_ERROR_MESSAGE = "A requisição HTTP %s falhou para URL: %s. Erro: %s";
+    private static final String INTERRUPTED_ERROR_MESSAGE = "A thread foi interrompida durante a request HTTP %s para URL: %s";
 
     public APIConsume(HttpClient client) {
         this.client = client;
@@ -33,12 +35,10 @@ public class APIConsume {
         try {
             response = client.send(request, HttpResponse.BodyHandlers.ofString());
         } catch (IOException e) {
-            throw new RuntimeException(String.format(
-                "A requisição HTTP falhou para URL: %s. Erro: %s", url, e.getMessage()), e);
+            throw new RuntimeException(String.format(HTTP_ERROR_MESSAGE, "GET", url, e.getMessage()), e);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            throw new RuntimeException(String.format(
-                "A thread foi interrompida durante a request HTTP para URL: %s", url), e);
+            throw new RuntimeException(String.format(INTERRUPTED_ERROR_MESSAGE, "GET", url), e);
         }
 
         return response.body();
@@ -52,12 +52,10 @@ public class APIConsume {
         try {
             response = client.send(request, HttpResponse.BodyHandlers.ofString());
         } catch (IOException e) {
-            throw new RuntimeException(String.format(
-                "A requisição HTTP DELETE falhou para URL: %s. Erro: %s", url, e.getMessage()), e);
+            throw new RuntimeException(String.format(HTTP_ERROR_MESSAGE, "DELETE", url, e.getMessage()), e);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            throw new RuntimeException(String.format(
-                "A thread foi interrompida durante a request HTTP DELETE para URL: %s", url), e);
+            throw new RuntimeException(String.format(INTERRUPTED_ERROR_MESSAGE, "DELETE", url), e);
         }
 
         return response.body();
@@ -69,12 +67,10 @@ public class APIConsume {
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
             return response.statusCode();
         } catch (IOException e) {
-            throw new RuntimeException(String.format(
-                "A requisição HTTP DELETE falhou para URL: %s. Erro: %s", url, e.getMessage()), e);
+            throw new RuntimeException(String.format(HTTP_ERROR_MESSAGE, "DELETE", url, e.getMessage()), e);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            throw new RuntimeException(String.format(
-                "A thread foi interrompida durante a request HTTP DELETE para URL: %s", url), e);
+            throw new RuntimeException(String.format(INTERRUPTED_ERROR_MESSAGE, "DELETE", url), e);
         }
     }
 
@@ -84,12 +80,10 @@ public class APIConsume {
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
             return response.statusCode();
         } catch (IOException e) {
-            throw new RuntimeException(String.format(
-                "A requisição HTTP PUT falhou para URL: %s. Erro: %s", url, e.getMessage()), e);
+            throw new RuntimeException(String.format(HTTP_ERROR_MESSAGE, "PUT", url, e.getMessage()), e);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            throw new RuntimeException(String.format(
-                "A thread foi interrompida durante a request HTTP PUT para URL: %s", url), e);
+            throw new RuntimeException(String.format(INTERRUPTED_ERROR_MESSAGE, "PUT", url), e);
         }
     }
 }
