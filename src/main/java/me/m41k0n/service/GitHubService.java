@@ -146,6 +146,12 @@ public class GitHubService {
         } else {
             historyService.record(username, "unfollow", true, sourceListId);
         }
+        // Notificação opcional por operação (respeita dry-run)
+        try {
+            emailService.sendPerUnfollow(username, dryRun);
+        } catch (Exception ex) {
+            log.debug("[MAIL] Falha ao notificar unfollow de {}: {}", username, ex.getMessage());
+        }
         return dryRun;
     }
 
