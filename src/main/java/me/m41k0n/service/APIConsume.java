@@ -33,10 +33,10 @@ public class APIConsume {
         try {
             response = client.send(request, HttpResponse.BodyHandlers.ofString());
         } catch (IOException e) {
-            throw new RuntimeException("A requisição HTTP falhou para URL: " + url + " - " + e.getMessage(), e);
+            throw new RuntimeException("A requisição HTTP GET falhou para URL: " + url + " - " + e.getMessage(), e);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            throw new RuntimeException("A thread foi interrompida durante a request HTTP para URL: " + url, e);
+            throw new RuntimeException("A thread foi interrompida durante a request HTTP GET para URL: " + url, e);
         }
 
         return response.body();
