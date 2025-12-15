@@ -45,18 +45,21 @@ public class ExclusionService {
         Set<String> existing = listItemRepository.findByListId(list.getId()).stream()
                 .map(ListItemEntity::getUsername)
                 .collect(Collectors.toSet());
-        int added = 0;
-        for (String u : usernames) {
-            if (u == null || u.isBlank() || existing.contains(u)) continue;
-            ListItemEntity item = new ListItemEntity();
-            item.setListId(list.getId());
-            item.setUsername(u);
-            item.setList(list);
-            listItemRepository.save(item);
-            added++;
+        List<ListItemEntity> itemsToAdd = usernames.stream()
+                .filter(u -> u != null && !u.isBlank() && !existing.contains(u))
+                .map(u -> {
+                    ListItemEntity item = new ListItemEntity();
+                    item.setListId(list.getId());
+                    item.setUsername(u);
+                    item.setList(list);
+                    return item;
+                })
+                .collect(Collectors.toList());
+        if (!itemsToAdd.isEmpty()) {
+            listItemRepository.saveAll(itemsToAdd);
+            log.info("[EXCLUDE] {} usuários adicionados à lista de exclusões", itemsToAdd.size());
         }
-        if (added > 0) log.info("[EXCLUDE] {} usuários adicionados à lista de exclusões", added);
-        return added;
+        return itemsToAdd.size();
     }
 
     public Set<String> allUsernames() {
