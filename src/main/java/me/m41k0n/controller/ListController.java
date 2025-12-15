@@ -1,5 +1,6 @@
 package me.m41k0n.controller;
 
+import me.m41k0n.service.ExportService;
 import me.m41k0n.service.ListService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,9 +16,11 @@ import java.util.Map;
 public class ListController {
 
     private final ListService listService;
+    private final ExportService exportService;
 
-    public ListController(ListService listService) {
+    public ListController(ListService listService, ExportService exportService) {
         this.listService = listService;
+        this.exportService = exportService;
     }
 
     @GetMapping
@@ -63,5 +66,59 @@ public class ListController {
                                                      @RequestParam String action,
                                                      @RequestParam(defaultValue = "true") boolean skipProcessed) {
         return ResponseEntity.ok(listService.apply(id, action, skipProcessed));
+    }
+    // ===== Export para auditoria/portabilidade =====
+    @GetMapping("/{id}/export")
+    public ResponseEntity<?> exportOne(@PathVariable String id,
+                                       @RequestParam(defaultValue = "csv") String format) {
+        try {
+            var listData = listService.get(id);
+            var exportFormat = ExportService.ExportFormat.fromString(format);
+            if (exportFormat == null) {
+                return ResponseEntity.badRequest().body("Formato inválido. Use csv ou json.");
+            }
+            if (exportFormat == ExportService.ExportFormat.CSV) {
+                @SuppressWarnings("unchecked")
+                var items = (List<String>) listData.getOrDefault("items", List.of());
+                String body = exportService.exportListUsernamesToCsv(items);
+                String disposition = String.format("attachment; filename=list-%s.csv", id);
+                return ResponseEntity.ok()
+                        .header("Content-Type", exportFormat.getMimeType())
+                        .header("Content-Disposition", disposition)
+                        .body(body);
+            } else {
+                String body = exportService.exportFullListToJson(listData);
+                String disposition = String.format("attachment; filename=list-%s.json", id);
+                return ResponseEntity.ok()
+                        .header("Content-Type", exportFormat.getMimeType())
+                        .header("Content-Disposition", disposition)
+                        .body(body);
+            }
+        } catch (Exception ex) {
+            return ResponseEntity.internalServerError().body("Erro ao exportar lista: " + ex.getMessage());
+        }
+    }
+
+    @GetMapping("/export")
+    public ResponseEntity<?> exportAll(@RequestParam(defaultValue = "json") String format) {
+        try {
+            var exportFormat = ExportService.ExportFormat.fromString(format);
+            if (exportFormat == null || exportFormat == ExportService.ExportFormat.CSV) {
+                return ResponseEntity.badRequest().body("Somente export JSON é suportado para múltiplas listas.");
+            }
+            var basic = listService.findAllWithCounts();
+            var full = new java.util.ArrayList<Map<String, Object>>();
+            for (var row : basic) {
+                String id = String.valueOf(row.get("id"));
+                full.add(listService.get(id));
+            }
+            String body = exportService.exportAllListsToJson(full);
+            return ResponseEntity.ok()
+                    .header("Content-Type", exportFormat.getMimeType())
+                    .header("Content-Disposition", "attachment; filename=lists.json")
+                    .body(body);
+        } catch (Exception ex) {
+            return ResponseEntity.internalServerError().body("Erro ao exportar listas: " + ex.getMessage());
+        }
     }
 }

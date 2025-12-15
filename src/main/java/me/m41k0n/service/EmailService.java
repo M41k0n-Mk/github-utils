@@ -24,6 +24,8 @@ public class EmailService {
     @Value("${app.mail.from:github-utils@localhost}")
     private String mailFrom;
 
+    @Value("${app.mail.perUnfollow:false}")
+    private boolean perUnfollowEnabled;
     public EmailService(ObjectProvider<JavaMailSender> mailSenderProvider) {
         this.mailSenderProvider = mailSenderProvider;
     }
@@ -61,6 +63,41 @@ public class EmailService {
             log.info("[MAIL] Resumo de unfollow enviado para {}", mailTo);
         } catch (Exception e) {
             log.warn("[MAIL] Falha ao enviar e-mail de resumo: {}", e.getMessage());
+        }
+    }
+    /**
+     * Notificação opcional por operação de unfollow.
+     * Em dry-run, não envia e-mail (apenas loga).
+     */
+    public void sendPerUnfollow(String username, boolean dryRun) {
+        if (!perUnfollowEnabled) return;
+        if (dryRun) {
+            log.info("[MAIL] (dry-run) Notificação individual não enviada. usuário={}", username);
+            return;
+        }
+        if (!mailEnabled) {
+            log.info("[MAIL] app.mail.enabled=false. Notificação individual não enviada. usuário={}", username);
+            return;
+        }
+        if (mailTo == null || mailTo.isBlank()) {
+            log.warn("[MAIL] app.mail.to não configurado. Pulando e-mail individual de unfollow para {}", username);
+            return;
+        }
+        JavaMailSender mailSender = mailSenderProvider.getIfAvailable();
+        if (mailSender == null) {
+            log.info("[MAIL] JavaMailSender não está configurado. Pulando e-mail individual para {}", username);
+            return;
+        }
+        try {
+            SimpleMailMessage msg = new SimpleMailMessage();
+            msg.setFrom(mailFrom);
+            msg.setTo(mailTo);
+            msg.setSubject("[GitHub Utils] Unfollow executado");
+            msg.setText("Foi executado um unfollow para o usuário: " + username);
+            mailSender.send(msg);
+            log.info("[MAIL] Notificação individual enviada para {} (usuario={})", mailTo, username);
+        } catch (Exception e) {
+            log.warn("[MAIL] Falha ao enviar e-mail individual para {}: {}", username, e.getMessage());
         }
     }
 }
