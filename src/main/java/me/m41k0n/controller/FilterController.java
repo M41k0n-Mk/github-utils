@@ -22,6 +22,23 @@ public class FilterController {
         this.exportService = exportService;
     }
 
+    /**
+     * GET /api/filter/evaluate — aplica filtros avançados sobre a página atual do seu "following".
+     *
+     * Descrição: enriquece cada usuário com métricas (atividade pública, último push, followers, repos,
+     * linguagens, relação de follow, estimativa de contribuições) e retorna somente os que atendem
+     * aos critérios informados. Pode também exportar o resultado da página em CSV/JSON.
+     *
+     * Parâmetros (query):
+     * - page (int=1), size (int=25)
+     * - inactiveDays?, lastPushDays?, followersLt?, followersGt?, reposLt?, reposGt?
+     * - languages? (multi-valor), followsYou? (boolean), contribLt?, contribGt?
+     * - format? (csv|json) — quando presente, retorna arquivo ao invés de JSON
+     *
+     * Respostas:
+     * - 200 application/json (sem format): { totalCandidates, totalMatched, page, size, users: EnrichedUser[] }
+     * - 200 arquivo (com format): CSV/JSON com os usuários enriquecidos, usando Content-Disposition para download
+     */
     @GetMapping("/evaluate")
     public ResponseEntity<?> evaluate(
             @RequestParam(defaultValue = "1") int page,
@@ -50,35 +67,47 @@ public class FilterController {
 
         ExportService.ExportFormat exportFormat = ExportService.ExportFormat.fromString(format);
         if (exportFormat != null) {
-            String body;
-            try {
-                if (exportFormat == ExportService.ExportFormat.CSV) {
-                    body = exportService.exportEnrichedUsersToCsv((java.util.List<?>) (java.util.List<?>) result.users);
-                } else {
-                    body = exportService.exportEnrichedUsersToJson((java.util.List<?>) result.users);
-                }
-            } catch (Exception e) {
-                return ResponseEntity.internalServerError().body("Erro ao exportar: " + e.getMessage());
-            }
-            return ResponseEntity.ok()
-                    .header("Content-Type", exportFormat.getMimeType())
-                    .header("Content-Disposition", String.format("attachment; filename=filters-page-%d.%s", page, format.toLowerCase()))
-                    .body(body);
+            return buildExportResponse(page, format, exportFormat, result);
         }
-
-        Map<String, Object> resp = new HashMap<>();
-        resp.put("totalCandidates", result.totalCandidates);
-        resp.put("totalMatched", result.totalMatched);
-        resp.put("page", result.page);
-        resp.put("size", result.size);
-        resp.put("users", result.users);
-        return ResponseEntity.ok(resp);
+        return buildEvaluateJsonResponse(result);
     }
 
+    /**
+     * GET /api/filter/smart-suggest — preset de filtros sugerido.
+     *
+     * Descrição: aplica automaticamente o preset "inativo > 180 dias AND followers < 50" sobre a
+     * página atual do seu following e retorna os resultados enriquecidos.
+     *
+     * Parâmetros: page (int=1), size (int=25)
+     * Resposta 200 (application/json): { totalCandidates, totalMatched, page, size, users }
+     */
     @GetMapping("/smart-suggest")
     public ResponseEntity<Map<String, Object>> smartSuggest(@RequestParam(defaultValue = "1") int page,
                                                             @RequestParam(defaultValue = "25") int size) {
         var result = insightsService.smartSuggest(page, size);
+        return buildEvaluateJsonResponse(result);
+    }
+
+    private ResponseEntity<?> buildExportResponse(int page, String format,
+                                                  ExportService.ExportFormat exportFormat,
+                                                  me.m41k0n.service.GitHubInsightsService.PageResult result) {
+        String body;
+        try {
+            if (exportFormat == ExportService.ExportFormat.CSV) {
+                body = exportService.exportEnrichedUsersToCsv((java.util.List<?>) result.users);
+            } else {
+                body = exportService.exportEnrichedUsersToJson((java.util.List<?>) result.users);
+            }
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body("Erro ao exportar: " + e.getMessage());
+        }
+        return ResponseEntity.ok()
+                .header("Content-Type", exportFormat.getMimeType())
+                .header("Content-Disposition", String.format("attachment; filename=filters-page-%d.%s", page, format.toLowerCase()))
+                .body(body);
+    }
+
+    private ResponseEntity<Map<String, Object>> buildEvaluateJsonResponse(me.m41k0n.service.GitHubInsightsService.PageResult result) {
         Map<String, Object> resp = new HashMap<>();
         resp.put("totalCandidates", result.totalCandidates);
         resp.put("totalMatched", result.totalMatched);

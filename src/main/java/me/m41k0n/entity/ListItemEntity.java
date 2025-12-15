@@ -19,7 +19,6 @@ public class ListItemEntity {
     @JoinColumn(name = "list_id", insertable = false, updatable = false)
     private ListEntity list;
 
-    public String getListId() { return listId; }
     public void setListId(String listId) { this.listId = listId; }
 
     public String getUsername() { return username; }

@@ -66,8 +66,4 @@ public class ExclusionService {
                         .collect(Collectors.toSet())))
                 .orElseGet(HashSet::new);
     }
-
-    public boolean isExcluded(String username) {
-        return allUsernames().contains(username);
-    }
 }

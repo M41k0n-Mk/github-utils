@@ -42,23 +42,6 @@ public class APIConsume {
         return response.body();
     }
 
-    public String deleteData(String url) {
-        HttpRequest request = createRequestBuilder(url).DELETE().build();
-
-        HttpResponse<String> response;
-
-        try {
-            response = client.send(request, HttpResponse.BodyHandlers.ofString());
-        } catch (IOException e) {
-            throw new RuntimeException("A requisição HTTP falhou", e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new RuntimeException("A thread foi interrompida durante a request HTTP", e);
-        }
-
-        return response.body();
-    }
-
     public int deleteStatus(String url) {
         HttpRequest request = createRequestBuilder(url).DELETE().build();
         try {
