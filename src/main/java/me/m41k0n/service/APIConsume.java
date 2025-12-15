@@ -1,5 +1,6 @@
 package me.m41k0n.service;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -12,17 +13,18 @@ import java.net.http.HttpResponse;
 public class APIConsume {
 
     private final HttpClient client;
-    private static final String TOKEN = System.getenv("GITHUB_TOKEN");
+    private final String token;
 
-    public APIConsume(HttpClient client) {
+    public APIConsume(HttpClient client, @Value("${app.github.token}") String token) {
         this.client = client;
+        this.token = token;
     }
 
     private HttpRequest.Builder createRequestBuilder(String url) {
         return HttpRequest.newBuilder()
                 .uri(URI.create(url))
                 .header("Accept", "application/vnd.github+json")
-                .header("Authorization", "Bearer " + TOKEN)
+                .header("Authorization", "Bearer " + token)
                 .header("X-GitHub-Api-Version", "2022-11-28");
     }
 

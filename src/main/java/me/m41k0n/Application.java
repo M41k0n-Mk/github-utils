@@ -59,7 +59,11 @@ public class Application {
 
     private static void showWelcome() {
         HttpClient client = HttpClient.newHttpClient();
-        APIConsume apiConsume = new APIConsume(client);
+        String token = System.getenv("GITHUB_TOKEN");
+        if (token == null) {
+            token = "";
+        }
+        APIConsume apiConsume = new APIConsume(client, token);
 
         try {
             String octocat = apiConsume.getData("https://api.github.com/octocat");
