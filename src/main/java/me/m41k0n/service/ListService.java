@@ -46,13 +46,15 @@ public class ListService {
         le.setName(name);
         le = listRepository.save(le);
         if (items != null) {
+            List<ListItemEntity> itemEntities = new ArrayList<>();
             for (String u : items) {
                 ListItemEntity item = new ListItemEntity();
                 item.setListId(le.getId());
                 item.setUsername(u);
                 item.setList(le);
-                listItemRepository.save(item);
+                itemEntities.add(item);
             }
+            listItemRepository.saveAll(itemEntities);
         }
         return le;
     }
@@ -77,13 +79,15 @@ public class ListService {
         }
         if (items != null) {
             listItemRepository.deleteByListId(id);
+            List<ListItemEntity> itemEntities = new ArrayList<>();
             for (String u : items) {
                 ListItemEntity item = new ListItemEntity();
                 item.setListId(id);
                 item.setUsername(u);
                 item.setList(le);
-                listItemRepository.save(item);
+                itemEntities.add(item);
             }
+            listItemRepository.saveAll(itemEntities);
         }
         return listRepository.save(le);
     }
