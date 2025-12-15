@@ -45,14 +45,16 @@ public class ListService {
         ListEntity le = new ListEntity();
         le.setName(name);
         le = listRepository.save(le);
-        if (items != null) {
+        if (items != null && !items.isEmpty()) {
+            List<ListItemEntity> itemEntities = new ArrayList<>();
             for (String u : items) {
                 ListItemEntity item = new ListItemEntity();
                 item.setListId(le.getId());
                 item.setUsername(u);
                 item.setList(le);
-                listItemRepository.save(item);
+                itemEntities.add(item);
             }
+            listItemRepository.saveAll(itemEntities);
         }
         return le;
     }
@@ -77,12 +79,16 @@ public class ListService {
         }
         if (items != null) {
             listItemRepository.deleteByListId(id);
-            for (String u : items) {
-                ListItemEntity item = new ListItemEntity();
-                item.setListId(id);
-                item.setUsername(u);
-                item.setList(le);
-                listItemRepository.save(item);
+            if (!items.isEmpty()) {
+                List<ListItemEntity> itemEntities = new ArrayList<>();
+                for (String u : items) {
+                    ListItemEntity item = new ListItemEntity();
+                    item.setListId(id);
+                    item.setUsername(u);
+                    item.setList(le);
+                    itemEntities.add(item);
+                }
+                listItemRepository.saveAll(itemEntities);
             }
         }
         return listRepository.save(le);
