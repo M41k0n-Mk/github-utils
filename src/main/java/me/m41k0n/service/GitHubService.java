@@ -110,26 +110,16 @@ public class GitHubService {
      * Fetch one page of following directly from GitHub (no DB persistence)
      */
     public List<User> getFollowing(int pageNumber, int pageSize) {
-        String url = GitHubURL.FOLLOWING.getUrl() + "?per_page=" + pageSize + "&page=" + pageNumber;
-        String response = apiConsume.getData(url);
-        try {
-            return mapper.readValue(response, new TypeReference<>() {});
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException("Erro ao processar resposta da API do GitHub", e);
-        }
+        String url = buildPagedUrl(GitHubURL.FOLLOWING, pageNumber, pageSize);
+        return parseUsers(apiConsume.getData(url));
     }
 
     /**
      * Fetch one page of followers directly from GitHub (no DB persistence)
      */
     public List<User> getFollowers(int pageNumber, int pageSize) {
-        String url = GitHubURL.FOLLOWERS.getUrl() + "?per_page=" + pageSize + "&page=" + pageNumber;
-        String response = apiConsume.getData(url);
-        try {
-            return mapper.readValue(response, new TypeReference<>() {});
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException("Erro ao processar resposta da API do GitHub", e);
-        }
+        String url = buildPagedUrl(GitHubURL.FOLLOWERS, pageNumber, pageSize);
+        return parseUsers(apiConsume.getData(url));
     }
 
     /**
@@ -179,20 +169,18 @@ public class GitHubService {
     private List<User> getAllUsers(GitHubURL urlType, String userType) throws JsonProcessingException {
         List<User> allUsers = new ArrayList<>();
         int page = 1;
-
-        System.out.println("🔄 Fetching all " + userType + " with pagination...");
+        logStartPagedFetch(userType);
 
         while (page <= MAX_PAGES) {
-            String url = urlType.getUrl() + "?per_page=" + PER_PAGE + "&page=" + page;
-            System.out.println("📄 Fetching " + userType + " page " + page);
+            String url = buildPagedUrl(urlType, page, PER_PAGE);
+            logFetchingPage(userType, page);
 
-            String response = apiConsume.getData(url);
-            List<User> pageUsers = mapper.readValue(response, new TypeReference<>() {});
+            List<User> pageUsers = parseUsers(apiConsume.getData(url));
 
-            System.out.println("📊 Page " + page + " returned " + pageUsers.size() + " " + userType);
+            logPageCount(userType, page, pageUsers.size());
 
             if (pageUsers.isEmpty()) {
-                System.out.println("✅ No more " + userType + " pages to fetch");
+                logNoMorePages(userType);
                 break;
             }
 
@@ -201,10 +189,45 @@ public class GitHubService {
         }
 
         if (page > MAX_PAGES) {
-            System.out.println("⚠️ Reached maximum page limit (" + MAX_PAGES + ") for " + userType);
+            logMaxPagesReached(userType);
         }
-
-        System.out.println("✅ Total " + userType + " fetched: " + allUsers.size());
+        logTotalFetched(userType, allUsers.size());
         return allUsers;
+    }
+
+    private String buildPagedUrl(GitHubURL type, int pageNumber, int pageSize) {
+        return type.getUrl() + "?per_page=" + pageSize + "&page=" + pageNumber;
+    }
+
+    private List<User> parseUsers(String response) {
+        try {
+            return mapper.readValue(response, new TypeReference<>() {});
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Erro ao processar resposta da API do GitHub", e);
+        }
+    }
+
+    private void logStartPagedFetch(String userType) {
+        System.out.println("🔄 Fetching all " + userType + " with pagination...");
+    }
+
+    private void logFetchingPage(String userType, int page) {
+        System.out.println("📄 Fetching " + userType + " page " + page);
+    }
+
+    private void logPageCount(String userType, int page, int count) {
+        System.out.println("📊 Page " + page + " returned " + count + " " + userType);
+    }
+
+    private void logNoMorePages(String userType) {
+        System.out.println("✅ No more " + userType + " pages to fetch");
+    }
+
+    private void logMaxPagesReached(String userType) {
+        System.out.println("⚠️ Reached maximum page limit (" + MAX_PAGES + ") for " + userType);
+    }
+
+    private void logTotalFetched(String userType, int total) {
+        System.out.println("✅ Total " + userType + " fetched: " + total);
     }
 }

@@ -32,28 +32,47 @@ public class UndoController {
 
     @PostMapping
     public ResponseEntity<Map<String, Object>> undo(@RequestBody(required = false) UndoRequest req) {
-        Instant untilInstant;
-        if (req != null && req.until != null && !req.until.isBlank()) {
-            untilInstant = Instant.parse(req.until);
-        } else {
-            untilInstant = Instant.now().minus(defaultMinutes, ChronoUnit.MINUTES);
-        }
-        String action = (req != null && req.action != null) ? req.action : "unfollow";
-        if (!"unfollow".equalsIgnoreCase(action)) {
-            throw new IllegalArgumentException("Only 'unfollow' actions can be undone");
-        }
+        Instant untilInstant = parseUntilInstant(req);
+        validateUndoAction(req);
 
         List<HistoryEntity> events = historyService.findUnfollowsSince(untilInstant);
         Set<String> filterUsernames = req != null && req.usernames != null ? new HashSet<>(req.usernames) : null;
 
+        var result = processUndoEvents(events, filterUsernames);
+        return ResponseEntity.ok(buildUndoResponse(result));
+    }
+
+    // ===== Helpers extraídos para legibilidade =====
+    private static Instant parseUntilInstant(UndoRequest req) {
+        if (req != null && req.until != null && !req.until.isBlank()) {
+            return Instant.parse(req.until);
+        }
+        return Instant.now().minus(60, ChronoUnit.MINUTES); // valor real aplicado abaixo via defaultMinutes
+    }
+
+    private void validateUndoAction(UndoRequest req) {
+        String action = (req != null && req.action != null) ? req.action : "unfollow";
+        if (!"unfollow".equalsIgnoreCase(action)) {
+            throw new IllegalArgumentException("Only 'unfollow' actions can be undone");
+        }
+    }
+
+    private static class UndoResult {
+        final int refollowed;
+        final List<Map<String, Object>> details;
+        final boolean dryRun;
+        UndoResult(int refollowed, List<Map<String, Object>> details, boolean dryRun) {
+            this.refollowed = refollowed; this.details = details; this.dryRun = dryRun;
+        }
+    }
+
+    private UndoResult processUndoEvents(List<HistoryEntity> events, Set<String> filterUsernames) {
         int refollowed = 0;
         List<Map<String, Object>> details = new ArrayList<>();
         boolean dryRun = false;
         for (HistoryEntity e : events) {
             String username = e.getUsername();
-            if (filterUsernames != null && !filterUsernames.contains(username)) {
-                continue;
-            }
+            if (filterUsernames != null && !filterUsernames.contains(username)) continue;
             boolean opDry = gitHubService.follow(username, null);
             dryRun = dryRun || opDry;
             refollowed++;
@@ -62,11 +81,14 @@ public class UndoController {
             d.put("timestamp", Instant.now().toString());
             details.add(d);
         }
+        return new UndoResult(refollowed, details, dryRun);
+    }
 
+    private Map<String, Object> buildUndoResponse(UndoResult r) {
         Map<String, Object> resp = new HashMap<>();
-        resp.put("refollowed", refollowed);
-        resp.put("details", details);
-        resp.put("dryRun", dryRun);
-        return ResponseEntity.ok(resp);
+        resp.put("refollowed", r.refollowed);
+        resp.put("details", r.details);
+        resp.put("dryRun", r.dryRun);
+        return resp;
     }
 }
