@@ -101,34 +101,57 @@ public class ListService {
         int skipped = 0;
         boolean dryRun = false;
         List<Map<String, Object>> details = new ArrayList<>();
+
         for (ListItemEntity item : items) {
-            String username = item.getUsername();
-            Map<String, Object> d = new HashMap<>();
-            d.put("username", username);
-            d.put("action", action);
-            if (skipProcessed && historyService.alreadyProcessed(username, action)) {
-                d.put("skippedReason", "already-" + action);
+            var result = processListItem(action, skipProcessed, le, item);
+            if (result.skipped) {
                 skipped++;
-                details.add(d);
-                continue;
-            }
-            boolean opDry;
-            if ("unfollow".equalsIgnoreCase(action)) {
-                opDry = gitHubService.unfollow(username, le.getId());
-            } else if ("follow".equalsIgnoreCase(action)) {
-                opDry = gitHubService.follow(username, le.getId());
             } else {
-                throw new IllegalArgumentException("Invalid action: " + action);
+                applied++;
+                dryRun = dryRun || result.opDry;
             }
-            dryRun = dryRun || opDry;
-            applied++;
-            details.add(d);
+            details.add(result.detail);
         }
+        return buildApplyResponse(applied, skipped, details, dryRun);
+    }
+
+    private Map<String, Object> buildApplyResponse(int applied, int skipped, List<Map<String, Object>> details, boolean dryRun) {
         Map<String, Object> resp = new HashMap<>();
         resp.put("applied", applied);
         resp.put("skipped", skipped);
         resp.put("details", details);
         resp.put("dryRun", dryRun);
         return resp;
+    }
+
+    private static class ItemResult {
+        final boolean skipped;
+        final boolean opDry;
+        final Map<String, Object> detail;
+        ItemResult(boolean skipped, boolean opDry, Map<String, Object> detail) {
+            this.skipped = skipped; this.opDry = opDry; this.detail = detail;
+        }
+    }
+
+    private ItemResult processListItem(String action, boolean skipProcessed, ListEntity le, ListItemEntity item) {
+        String username = item.getUsername();
+        Map<String, Object> d = new HashMap<>();
+        d.put("username", username);
+        d.put("action", action);
+
+        if (skipProcessed && historyService.alreadyProcessed(username, action)) {
+            d.put("skippedReason", "already-" + action);
+            return new ItemResult(true, false, d);
+        }
+
+        boolean opDry;
+        if ("unfollow".equalsIgnoreCase(action)) {
+            opDry = gitHubService.unfollow(username, le.getId());
+        } else if ("follow".equalsIgnoreCase(action)) {
+            opDry = gitHubService.follow(username, le.getId());
+        } else {
+            throw new IllegalArgumentException("Invalid action: " + action);
+        }
+        return new ItemResult(false, opDry, d);
     }
 }

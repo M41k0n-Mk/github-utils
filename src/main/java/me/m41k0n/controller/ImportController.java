@@ -33,12 +33,22 @@ public class ImportController {
         this.historyService = historyService;
     }
 
-    // Endpoints legados mantidos
+    // Endpoints legados mantidos (use /api/import/users com action=refollow|exclude)
+    /**
+     * LEGACY: importe usernames e execute refollow.
+     * Prefira usar: POST /api/import/users?action=refollow
+     */
+    @Deprecated
     @PostMapping(value = "/refollow", consumes = { MediaType.TEXT_PLAIN_VALUE, MediaType.APPLICATION_JSON_VALUE })
     public ResponseEntity<Map<String, Object>> importRefollow(@RequestBody String body) {
         return handleRefollow(usernamesFromBody(body), true);
     }
 
+    /**
+     * LEGACY: importe usernames e adicione-os na lista de exclusão.
+     * Prefira usar: POST /api/import/users?action=exclude
+     */
+    @Deprecated
     @PostMapping(value = "/exclude", consumes = { MediaType.TEXT_PLAIN_VALUE, MediaType.APPLICATION_JSON_VALUE })
     public ResponseEntity<Map<String, Object>> importExclude(@RequestBody String body) {
         return handleExclude(usernamesFromBody(body));
