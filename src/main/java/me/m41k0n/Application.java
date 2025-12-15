@@ -39,12 +39,12 @@ public class Application {
     private static void runMenuMode(String[] args) {
         System.out.println("🚀 Iniciando GitHub Utils em modo Menu...\n");
 
-        showWelcome();
-
         // Bootstrap Spring without web server and use beans for services
         ApplicationContext context = new SpringApplicationBuilder(Application.class)
                 .web(WebApplicationType.NONE)
                 .run(args);
+
+        showWelcome(context);
 
         MenuDisplay menu = MenuFactory.createMenu(context);
         menu.show();
@@ -57,13 +57,8 @@ public class Application {
         SpringApplication.run(Application.class, args);
     }
 
-    private static void showWelcome() {
-        HttpClient client = HttpClient.newHttpClient();
-        String token = System.getenv("GITHUB_TOKEN");
-        if (token == null) {
-            token = "";
-        }
-        APIConsume apiConsume = new APIConsume(client, token);
+    private static void showWelcome(ApplicationContext context) {
+        APIConsume apiConsume = context.getBean(APIConsume.class);
 
         try {
             String octocat = apiConsume.getData("https://api.github.com/octocat");
