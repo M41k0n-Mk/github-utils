@@ -55,6 +55,60 @@ public class ExportService {
         };
     }
 
+    // ===== Export para filtros enriquecidos =====
+    /**
+     * Exporta usuários enriquecidos (campos dinâmicos) para JSON.
+     */
+    public String exportEnrichedUsersToJson(java.util.List<?> enrichedUsers) throws Exception {
+        return M.writerWithDefaultPrettyPrinter().writeValueAsString(enrichedUsers);
+    }
+
+    /**
+     * Exporta usuários enriquecidos para CSV com colunas comuns.
+     * Este método espera que cada item possua getters ou campos públicos com nomes:
+     * login, htmlUrl, lastPublicActivity, lastPushAt, followersCount, reposCount, languages, followsYou, youFollow, contributionsEstimate
+     */
+    public String exportEnrichedUsersToCsv(java.util.List<?> enrichedUsers) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("login,html_url,last_public_activity,last_push_at,followers_count,repos_count,languages,follows_you,you_follow,contributions\n");
+        for (Object o : enrichedUsers) {
+            try {
+                var node = M.valueToTree(o);
+                String langs = "";
+                if (node.has("languages") && node.get("languages").isArray()) {
+                    java.util.List<String> list = new java.util.ArrayList<>();
+                    node.get("languages").forEach(n -> list.add(n.asText("")));
+                    langs = String.join("|", list);
+                }
+                appendCsv(sb, node.path("login").asText(""));
+                appendCsv(sb, node.path("htmlUrl").asText(""));
+                appendCsv(sb, node.path("lastPublicActivity").asText(""));
+                appendCsv(sb, node.path("lastPushAt").asText(""));
+                appendCsv(sb, String.valueOf(node.path("followersCount").asInt(0)));
+                appendCsv(sb, String.valueOf(node.path("reposCount").asInt(0)));
+                appendCsv(sb, langs);
+                appendCsv(sb, String.valueOf(node.path("followsYou").asBoolean(false)));
+                appendCsv(sb, String.valueOf(node.path("youFollow").asBoolean(false)));
+                sb.append(csvEscape(String.valueOf(node.path("contributionsEstimate").asInt(0))));
+                sb.append('\n');
+            } catch (Exception ignored) {
+            }
+        }
+        return sb.toString();
+    }
+
+    private void appendCsv(StringBuilder sb, String value) {
+        sb.append(csvEscape(value)).append(',');
+    }
+
+    private String csvEscape(String s) {
+        if (s == null) return "";
+        String v = s.replace("\r", " ").replace("\n", " ");
+        // Escape aspas duplas
+        v = v.replace("\"", "\"\"");
+        return v;
+    }
+
     // ===== Lists export (para auditoria/portabilidade) =====
     /**
      * Exporta apenas os usernames de uma lista nomeada para CSV (coluna única: login).
