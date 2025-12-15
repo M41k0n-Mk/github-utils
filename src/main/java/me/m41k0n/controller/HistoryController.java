@@ -50,7 +50,6 @@ public class HistoryController {
         }
     }
 
-    // ===== Helpers =====
     private Instant parseInstantOrNull(String iso) {
         return (iso != null && !iso.isBlank()) ? Instant.parse(iso) : null;
     }

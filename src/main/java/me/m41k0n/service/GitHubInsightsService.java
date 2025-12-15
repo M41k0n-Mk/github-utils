@@ -98,8 +98,8 @@ public class GitHubInsightsService {
         List<User> base = gitHubService.getFollowing(params.page, params.size);
         int totalCandidates = base.size();
         List<EnrichedUser> enriched = base.stream()
-                .map(u -> safeEnrich(u))
-                .filter(eu -> eu != null)
+                .map(this::safeEnrich)
+                .filter(Objects::nonNull)
                 .filter(eu -> matchesAllFilters(eu, params))
                 .collect(Collectors.toList());
         return new PageResult(totalCandidates, enriched.size(), params.page, params.size, enriched);
@@ -191,7 +191,7 @@ public class GitHubInsightsService {
         String body = apiConsume.getData(url);
         try {
             JsonNode arr = mapper.readTree(body);
-            if (arr.isArray() && arr.size() > 0) {
+            if (arr.isArray() && !arr.isEmpty()) {
                 String createdAt = arr.get(0).path("created_at").asText(null);
                 return createdAt == null ? null : Instant.parse(createdAt);
             }

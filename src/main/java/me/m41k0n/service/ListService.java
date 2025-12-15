@@ -2,7 +2,6 @@ package me.m41k0n.service;
 
 import me.m41k0n.entity.ListEntity;
 import me.m41k0n.entity.ListItemEntity;
-import me.m41k0n.repository.HistoryRepository;
 import me.m41k0n.repository.ListItemRepository;
 import me.m41k0n.repository.ListRepository;
 import org.springframework.stereotype.Service;
@@ -124,14 +123,7 @@ public class ListService {
         return resp;
     }
 
-    private static class ItemResult {
-        final boolean skipped;
-        final boolean opDry;
-        final Map<String, Object> detail;
-        ItemResult(boolean skipped, boolean opDry, Map<String, Object> detail) {
-            this.skipped = skipped; this.opDry = opDry; this.detail = detail;
-        }
-    }
+    private record ItemResult(boolean skipped, boolean opDry, Map<String, Object> detail) {}
 
     private ItemResult processListItem(String action, boolean skipProcessed, ListEntity le, ListItemEntity item) {
         String username = item.getUsername();

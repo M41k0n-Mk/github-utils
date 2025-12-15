@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -80,7 +81,7 @@ public class ListController {
                                                      @RequestParam(defaultValue = "true") boolean skipProcessed) {
         return ResponseEntity.ok(listService.apply(id, action, skipProcessed));
     }
-    // ===== Export para auditoria/portabilidade =====
+    // Export para auditoria/portabilidade
     @GetMapping("/{id}/export")
     public ResponseEntity<?> exportOne(@PathVariable String id,
                                        @RequestParam(defaultValue = "csv") String format) {
@@ -114,7 +115,6 @@ public class ListController {
         }
     }
 
-    // ===== Helpers privados para legibilidade =====
     private Map<String, Object> buildListCreateResponse(me.m41k0n.entity.ListEntity le, List<String> items) {
         Map<String, Object> resp = new HashMap<>();
         resp.put("id", le.getId());
@@ -145,9 +145,9 @@ public class ListController {
         }
     }
 
-    private java.util.List<Map<String, Object>> loadAllListsFully() {
+    private List<Map<String, Object>> loadAllListsFully() {
         var basic = listService.findAllWithCounts();
-        var full = new java.util.ArrayList<Map<String, Object>>();
+        var full = new ArrayList<Map<String, Object>>();
         for (var row : basic) {
             String id = String.valueOf(row.get("id"));
             full.add(listService.get(id));

@@ -81,7 +81,6 @@ public class GitHubController {
         }
     }
 
-    // ===== Helpers extraídos para legibilidade =====
     private ResponseEntity<?> buildPreviewExportResponse(int page, me.m41k0n.service.PreviewReport report, ExportService.ExportFormat exportFormat) throws Exception {
         String exportedData = exportService.exportToFormat(report.getPage(), exportFormat);
         return ResponseEntity.ok()

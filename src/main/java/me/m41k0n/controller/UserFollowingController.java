@@ -16,11 +16,9 @@ import java.util.Map;
 public class UserFollowingController {
 
     private final GitHubService gitHubService;
-    private final HistoryService historyService;
 
-    public UserFollowingController(GitHubService gitHubService, HistoryService historyService) {
+    public UserFollowingController(GitHubService gitHubService) {
         this.gitHubService = gitHubService;
-        this.historyService = historyService;
     }
 
     @GetMapping
@@ -33,7 +31,6 @@ public class UserFollowingController {
         resp.put("users", users);
         return ResponseEntity.ok(resp);
     }
-//ok
     @DeleteMapping("/{username}")
     public ResponseEntity<Map<String, Object>> unfollow(@PathVariable String username) {
         boolean dryRun = gitHubService.unfollow(username, null);
@@ -42,7 +39,6 @@ public class UserFollowingController {
         resp.put("dryRun", dryRun);
         return ResponseEntity.ok(resp);
     }
-//ok
     @PutMapping("/{username}")
     public ResponseEntity<Map<String, Object>> follow(@PathVariable String username) {
         boolean dryRun = gitHubService.follow(username, null);

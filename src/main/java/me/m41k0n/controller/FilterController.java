@@ -62,7 +62,6 @@ public class FilterController {
         return buildEvaluateJsonResponse(result);
     }
 
-    // ===== Helpers extraídos para legibilidade =====
     private ResponseEntity<?> buildExportResponse(int page, String format,
                                                   ExportService.ExportFormat exportFormat,
                                                   me.m41k0n.service.GitHubInsightsService.PageResult result) {

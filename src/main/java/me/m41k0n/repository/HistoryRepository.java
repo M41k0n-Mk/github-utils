@@ -8,17 +8,10 @@ import java.time.Instant;
 import java.util.List;
 
 public interface HistoryRepository extends JpaRepository<HistoryEntity, String> {
+
     boolean existsByUsernameAndActionAndDryRun(String username, String action, int dryRun);
 
-    List<HistoryEntity> findByUsernameAndActionAndDryRunAndTimestampGreaterThanEqual(String username, String action, int dryRun, String timestampIso);
-
     List<HistoryEntity> findByActionAndDryRunAndTimestampGreaterThanEqual(String action, int dryRun, String timestampIso);
-
-    List<HistoryEntity> findByUsername(String username);
-
-    List<HistoryEntity> findByAction(String action);
-
-    List<HistoryEntity> findByTimestampGreaterThanEqual(String timestampIso);
 
     @Query("select h from HistoryEntity h where (:username is null or h.username = :username) and (:action is null or h.action = :action) and (:sinceIso is null or h.timestamp >= :sinceIso) and h.dryRun = 0")
     List<HistoryEntity> search(String username, String action, String sinceIso);
