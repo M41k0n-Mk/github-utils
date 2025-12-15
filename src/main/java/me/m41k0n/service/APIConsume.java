@@ -33,10 +33,12 @@ public class APIConsume {
         try {
             response = client.send(request, HttpResponse.BodyHandlers.ofString());
         } catch (IOException e) {
-            throw new RuntimeException("A requisição HTTP falhou", e);
+            throw new RuntimeException(String.format(
+                "A requisição HTTP falhou para URL: %s. Erro: %s", url, e.getMessage()), e);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            throw new RuntimeException("A thread foi interrompida durante a request HTTP", e);
+            throw new RuntimeException(String.format(
+                "A thread foi interrompida durante a request HTTP para URL: %s", url), e);
         }
 
         return response.body();
@@ -50,10 +52,12 @@ public class APIConsume {
         try {
             response = client.send(request, HttpResponse.BodyHandlers.ofString());
         } catch (IOException e) {
-            throw new RuntimeException("A requisição HTTP falhou", e);
+            throw new RuntimeException(String.format(
+                "A requisição HTTP DELETE falhou para URL: %s. Erro: %s", url, e.getMessage()), e);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            throw new RuntimeException("A thread foi interrompida durante a request HTTP", e);
+            throw new RuntimeException(String.format(
+                "A thread foi interrompida durante a request HTTP DELETE para URL: %s", url), e);
         }
 
         return response.body();
@@ -65,10 +69,12 @@ public class APIConsume {
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
             return response.statusCode();
         } catch (IOException e) {
-            throw new RuntimeException("A requisição HTTP falhou", e);
+            throw new RuntimeException(String.format(
+                "A requisição HTTP DELETE falhou para URL: %s. Erro: %s", url, e.getMessage()), e);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            throw new RuntimeException("A thread foi interrompida durante a request HTTP", e);
+            throw new RuntimeException(String.format(
+                "A thread foi interrompida durante a request HTTP DELETE para URL: %s", url), e);
         }
     }
 
@@ -78,10 +84,12 @@ public class APIConsume {
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
             return response.statusCode();
         } catch (IOException e) {
-            throw new RuntimeException("A requisição HTTP falhou", e);
+            throw new RuntimeException(String.format(
+                "A requisição HTTP PUT falhou para URL: %s. Erro: %s", url, e.getMessage()), e);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            throw new RuntimeException("A thread foi interrompida durante a request HTTP", e);
+            throw new RuntimeException(String.format(
+                "A thread foi interrompida durante a request HTTP PUT para URL: %s", url), e);
         }
     }
 }
