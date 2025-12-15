@@ -120,6 +120,19 @@ public class GitHubService {
     }
 
     /**
+     * Fetch one page of followers directly from GitHub (no DB persistence)
+     */
+    public List<User> getFollowers(int pageNumber, int pageSize) {
+        String url = GitHubURL.FOLLOWERS.getUrl() + "?per_page=" + pageSize + "&page=" + pageNumber;
+        String response = apiConsume.getData(url);
+        try {
+            return mapper.readValue(response, new TypeReference<>() {});
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Erro ao processar resposta da API do GitHub", e);
+        }
+    }
+
+    /**
      * Perform unfollow. Returns true when operation was dry-run.
      */
     public boolean unfollow(String username, String sourceListId) {
