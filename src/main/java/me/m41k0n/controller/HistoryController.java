@@ -22,6 +22,16 @@ public class HistoryController {
         this.exportService = exportService;
     }
 //history lá no frontend parece que pega do cache não bate no endpoint aqui
+    /**
+     * GET /api/history — consulta o histórico de ações follow/unfollow.
+     *
+     * Filtros opcionais via query string:
+     * - username: login a filtrar
+     * - action: "follow" | "unfollow"
+     * - since: instante ISO-8601 (inclui eventos a partir deste instante)
+     *
+     * Resposta 200: array de HistoryEntity com campos { id, username, action, timestamp, sourceListId, dryRun }.
+     */
     @GetMapping
     public ResponseEntity<List<HistoryEntity>> getHistory(@RequestParam(required = false) String username,
                                                           @RequestParam(required = false) String action,
@@ -30,6 +40,15 @@ public class HistoryController {
         return ResponseEntity.ok(historyService.search(username, action, sinceInstant));
     }
 
+    /**
+     * GET /api/history/export — exporta o histórico para CSV ou JSON conforme filtros.
+     *
+     * Filtros opcionais via query string:
+     * - username, action (follow|unfollow), since (ISO-8601)
+     * - format: csv | json (obrigatório aqui; default csv)
+     *
+     * Resposta 200: arquivo (attachment) com Content-Type e Content-Disposition apropriados.
+     */
     @GetMapping("/export")
     public ResponseEntity<?> exportHistory(@RequestParam(required = false) String username,
                                            @RequestParam(required = false) String action,

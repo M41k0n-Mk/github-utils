@@ -20,6 +20,20 @@ public class UndoController {
 
     public record UndoRequest(String until, List<String> usernames, String action) {}
 
+    /**
+     * POST /api/undo — desfaz ações de "unfollow" recentes (executa "follow" de volta).
+     *
+     * Descrição: busca no histórico ações de unfollow desde um instante e faz refollow para os
+     * usuários encontrados. Quando o modo dry-run está ativo, não executa a escrita, apenas registra
+     * o que seria feito. É possível restringir a um subconjunto de usernames.
+     *
+     * Body (opcional): { "until"?: ISO-8601, "usernames"?: string[], "action"?: "unfollow" }
+     * - until: instante limite inferior; quando omitido, usa app.undo.defaultMinutes (ex.: últimos 60 min)
+     * - usernames: filtro opcional de logins específicos
+     * - action: apenas "unfollow" é aceito (qualquer outro valor é rejeitado)
+     *
+     * Resposta 200 (application/json): { "refollowed": number, "details": [{ username, timestamp }], "dryRun": boolean }
+     */
     @PostMapping
     public ResponseEntity<Map<String, Object>> undo(@RequestBody(required = false) UndoRequest req) {
         Instant untilInstant = undoService.resolveUntilInstant(req != null ? req.until : null);

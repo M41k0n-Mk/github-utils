@@ -22,6 +22,14 @@ public class DryRunController {
         this.dryRunService = dryRunService;
     }
 
+    /**
+     * GET /api/dry-run/status — retorna o estado atual do modo dry-run.
+     *
+     * Descrição: indica se o modo simulado (sem writes) está habilitado, uma descrição textual
+     * e o instante da última alteração.
+     *
+     * Resposta 200 (application/json): { "enabled": boolean, "description": string, "lastChanged": ISO-8601 }
+     */
     @GetMapping("/status")
     public ResponseEntity<Map<String, Object>> getDryRunStatus() {
         DryRunService.DryRunStatus status = dryRunService.getStatus();
@@ -34,6 +42,11 @@ public class DryRunController {
         return ResponseEntity.ok(response);
     }
     
+    /**
+     * POST /api/dry-run/toggle — alterna o estado do dry-run (liga/desliga).
+     *
+     * Resposta 200 (application/json): { "enabled": boolean, "description": string, "message": string }
+     */
     @PostMapping("/toggle")
     public ResponseEntity<Map<String, Object>> toggleDryRun() {
         boolean newState = dryRunService.toggleDryRun();
@@ -46,6 +59,11 @@ public class DryRunController {
         
         return ResponseEntity.ok(response);
     }
+    /**
+     * POST /api/dry-run/enable — ativa explicitamente o modo dry-run.
+     *
+     * Resposta 200 (application/json): { "enabled": true, "description": string, "message": string }
+     */
     @PostMapping("/enable")
     public ResponseEntity<Map<String, Object>> enableDryRun() {
         dryRunService.enableDryRun();
@@ -58,6 +76,11 @@ public class DryRunController {
         
         return ResponseEntity.ok(response);
     }
+    /**
+     * POST /api/dry-run/disable — desativa explicitamente o modo dry-run.
+     *
+     * Resposta 200 (application/json): { "enabled": false, "description": string, "message": string }
+     */
     @PostMapping("/disable")
     public ResponseEntity<Map<String, Object>> disableDryRun() {
         dryRunService.disableDryRun();

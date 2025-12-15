@@ -22,6 +22,23 @@ public class FilterController {
         this.exportService = exportService;
     }
 
+    /**
+     * GET /api/filter/evaluate — aplica filtros avançados sobre a página atual do seu "following".
+     *
+     * Descrição: enriquece cada usuário com métricas (atividade pública, último push, followers, repos,
+     * linguagens, relação de follow, estimativa de contribuições) e retorna somente os que atendem
+     * aos critérios informados. Pode também exportar o resultado da página em CSV/JSON.
+     *
+     * Parâmetros (query):
+     * - page (int=1), size (int=25)
+     * - inactiveDays?, lastPushDays?, followersLt?, followersGt?, reposLt?, reposGt?
+     * - languages? (multi-valor), followsYou? (boolean), contribLt?, contribGt?
+     * - format? (csv|json) — quando presente, retorna arquivo ao invés de JSON
+     *
+     * Respostas:
+     * - 200 application/json (sem format): { totalCandidates, totalMatched, page, size, users: EnrichedUser[] }
+     * - 200 arquivo (com format): CSV/JSON com os usuários enriquecidos, usando Content-Disposition para download
+     */
     @GetMapping("/evaluate")
     public ResponseEntity<?> evaluate(
             @RequestParam(defaultValue = "1") int page,
@@ -55,6 +72,15 @@ public class FilterController {
         return buildEvaluateJsonResponse(result);
     }
 
+    /**
+     * GET /api/filter/smart-suggest — preset de filtros sugerido.
+     *
+     * Descrição: aplica automaticamente o preset "inativo > 180 dias AND followers < 50" sobre a
+     * página atual do seu following e retorna os resultados enriquecidos.
+     *
+     * Parâmetros: page (int=1), size (int=25)
+     * Resposta 200 (application/json): { totalCandidates, totalMatched, page, size, users }
+     */
     @GetMapping("/smart-suggest")
     public ResponseEntity<Map<String, Object>> smartSuggest(@RequestParam(defaultValue = "1") int page,
                                                             @RequestParam(defaultValue = "25") int size) {

@@ -56,6 +56,29 @@ public class ImportController {
 
     // Endpoint unificado com multipart CSV/JSON
     @PostMapping(value = "/users", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.TEXT_PLAIN_VALUE, MediaType.APPLICATION_JSON_VALUE })
+    /**
+     * POST /api/import/users — endpoint unificado de importação.
+     *
+     * Descrição: recebe uma lista de usernames via arquivo (multipart CSV/JSON, campo "file") ou
+     * no corpo da requisição (text/plain CSV ou application/json array de strings) e executa a
+     * ação especificada por query param:
+     * - action=exclude → adiciona os usuários à lista especial de exclusão (EXCLUDE_NEXT_RUN)
+     * - action=refollow → executa follow para os usuários informados
+     *
+     * Parâmetros (query):
+     * - action: "refollow" | "exclude" (obrigatório)
+     * - skipProcessed: boolean (default true) — só se aplica à ação refollow; quando true, evita
+     *   repetir follow para usuários que já foram efetivamente seguidos no passado (histórico)
+     *
+     * Entradas suportadas:
+     * - multipart/form-data com campo "file" (.csv ou .json)
+     * - text/plain (CSV) no corpo, com cabeçalho opcional "login"
+     * - application/json no corpo: array de strings com usernames
+     *
+     * Resposta 200 (application/json):
+     * - action=exclude → { received, added }
+     * - action=refollow → { received, applied, skipped, dryRun, details[] }
+     */
     public ResponseEntity<Map<String, Object>> importUsers(@RequestParam String action,
                                                            @RequestParam(defaultValue = "true") boolean skipProcessed,
                                                            @RequestPart(value = "file", required = false) MultipartFile file,

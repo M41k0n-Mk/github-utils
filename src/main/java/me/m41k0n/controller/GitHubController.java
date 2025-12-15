@@ -24,8 +24,13 @@ public class GitHubController {
         this.exportService = exportService;
     }
     /**
-     * GET /api/non-followers — retorna a lista completa (não paginada) de não-seguidores.
-     * Uso pontual, pois pode ser grande.
+     * GET /api/non-followers — retorna a lista completa (não paginada) de usuários que você segue
+     * mas que não te seguem de volta.
+     *
+     * Descrição: executa apenas leituras na API do GitHub para compor o conjunto de não-seguidores.
+     * O resultado pode ser grande — preferir o endpoint paginado (/api/non-followers/preview) para UIs.
+     *
+     * Resposta 200 (application/json): { "count": number, "users": User[] }
      */
     @GetMapping("/non-followers")
     public ResponseEntity<Map<String, Object>> getNonFollowers() {
@@ -44,7 +49,15 @@ public class GitHubController {
     }
     /**
      * GET /api/non-followers/preview — consulta paginada (somente leitura) dos não-seguidores.
-     * Quando "format" é informado, retorna export (CSV/JSON) da página solicitada.
+     *
+     * Descrição: retorna totais (followers, following, non-followers) e a página solicitada de usuários
+     * que você segue e não te seguem. Quando o parâmetro "format" é informado, exporta a página
+     * como arquivo CSV ou JSON para download (attachment).
+     *
+     * Parâmetros: page (int=1), size (int=25), format? (csv|json)
+     * Respostas:
+     * - 200 JSON: { totalFollowers, totalFollowing, totalNonFollowers, page, size, users[], dryRunEnabled }
+     * - 200 arquivo: CSV/JSON da página de usuários, com Content-Type/Disposition apropriados.
      */
     @GetMapping("/non-followers/preview")
     public ResponseEntity<?> previewNonFollowers(@RequestParam(defaultValue = "1") int page, @RequestParam(defaultValue = "25") int size, @RequestParam(required = false) String format) {
@@ -63,7 +76,12 @@ public class GitHubController {
         }
     }
     /**
-     * DELETE /api/unfollow-non-followers — executa unfollow em massa. Respeita dry-run.
+     * DELETE /api/unfollow-non-followers — executa unfollow em massa nos não-seguidores.
+     *
+     * Descrição: respeita o modo dry-run. Quando ativo, não faz writes na API do GitHub, apenas
+     * registra em histórico o que seria feito e emite logs/resumos (e-mails opcionais conforme config).
+     *
+     * Resposta 200 (application/json): { "message": string, "warning": string }
      */
     @DeleteMapping("/unfollow-non-followers")
     public ResponseEntity<Map<String, String>> unfollowNonFollowers() {
