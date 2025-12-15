@@ -67,7 +67,6 @@ public class ListController {
                                                      @RequestParam(defaultValue = "true") boolean skipProcessed) {
         return ResponseEntity.ok(listService.apply(id, action, skipProcessed));
     }
-
     // ===== Export para auditoria/portabilidade =====
     @GetMapping("/{id}/export")
     public ResponseEntity<?> exportOne(@PathVariable String id,

@@ -152,6 +152,7 @@ public class ImportController {
         for (int i = 0; i < lines.length; i++) {
             String line = lines[i].trim();
             if (line.isBlank()) continue;
+            // ignora cabeçalho comum
             if (i == 0 && (line.toLowerCase().startsWith("login,") || line.equalsIgnoreCase("login"))) {
                 continue; // ignora cabeçalho
             }
@@ -163,7 +164,6 @@ public class ImportController {
         }
         return result;
     }
-
     private List<String> normalizeUsernames(List<String> usernames) {
         if (usernames == null) return List.of();
         LinkedHashSet<String> set = new LinkedHashSet<>();

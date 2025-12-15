@@ -84,7 +84,6 @@ public class ExportService {
     public String exportAllListsToJson(java.util.List<java.util.Map<String, Object>> lists) throws Exception {
         return M.writerWithDefaultPrettyPrinter().writeValueAsString(lists);
     }
-
     /**
      * Supported export formats
      */

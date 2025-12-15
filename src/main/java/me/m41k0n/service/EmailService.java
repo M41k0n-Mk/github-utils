@@ -26,7 +26,6 @@ public class EmailService {
 
     @Value("${app.mail.perUnfollow:false}")
     private boolean perUnfollowEnabled;
-
     public EmailService(ObjectProvider<JavaMailSender> mailSenderProvider) {
         this.mailSenderProvider = mailSenderProvider;
     }
@@ -66,7 +65,6 @@ public class EmailService {
             log.warn("[MAIL] Falha ao enviar e-mail de resumo: {}", e.getMessage());
         }
     }
-
     /**
      * Notificação opcional por operação de unfollow.
      * Em dry-run, não envia e-mail (apenas loga).
