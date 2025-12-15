@@ -15,6 +15,7 @@ public class MenuDisplay {
             ║ 2 - Dar unfollow em massa (não-seguidores)                   ║
             ║ 3 - Preview paginado e export (CSV/JSON)                     ║
             ║ 4 - Toggle dry-run (mostrar apenas o que seria feito)        ║
+            ║ 5 - Seleção manual (paginada) e aplicação (follow/unfollow)  ║
             ║ 0 - Sair                                                     ║
             ╚══════════════════════════════════════════════════════════════╝
             Digite sua opção:\s""";
