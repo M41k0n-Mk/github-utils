@@ -116,6 +116,20 @@ public class SelectFollowingCommand implements Command<Void> {
                     String skip = sc.nextLine().trim().toLowerCase();
                     boolean skipProcessed = !"n".equals(skip);
 
+                    // Resumo e confirmação reforçada
+                    System.out.println();
+                    System.out.println("Resumo da operação:");
+                    System.out.println("  Ação: " + action);
+                    System.out.println("  Selecionados: " + selected.size());
+                    System.out.println("  Skip já processados (histórico): " + (skipProcessed ? "SIM" : "NÃO"));
+                    System.out.println("  Amostra (até 5): " + selected.stream().limit(5).toList());
+                    System.out.print("Digite 'CONFIRMAR' para prosseguir ou qualquer outra coisa para cancelar: ");
+                    String confirm = sc.nextLine().trim();
+                    if (!"CONFIRMAR".equalsIgnoreCase(confirm)) {
+                        System.out.println("Operação cancelada pelo usuário.");
+                        break;
+                    }
+
                     String listIdToApply = lastSavedListId;
                     try {
                         if (listIdToApply == null) {

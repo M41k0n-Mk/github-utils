@@ -34,12 +34,30 @@ public class PreviewCommand implements Command<Void> {
 
             System.out.print("Export? (none/csv/json): ");
             String fmt = scanner.nextLine().trim().toLowerCase();
-            if ("csv".equals(fmt)) {
-                String csv = ExportUtils.toCsv(users);
-                System.out.println("--- CSV ---\n" + csv);
-            } else if ("json".equals(fmt)) {
-                String json = ExportUtils.toJson(users);
-                System.out.println("--- JSON ---\n" + json);
+            if ("csv".equals(fmt) || "json".equals(fmt)) {
+                System.out.print("Salvar em arquivo? (caminho ou Enter para imprimir no console): ");
+                String path = scanner.nextLine().trim();
+                try {
+                    if ("csv".equals(fmt)) {
+                        String csv = ExportUtils.toCsv(users);
+                        if (path.isEmpty()) {
+                            System.out.println("--- CSV ---\n" + csv);
+                        } else {
+                            java.nio.file.Files.writeString(java.nio.file.Path.of(path), csv);
+                            System.out.println("✅ CSV salvo em: " + path);
+                        }
+                    } else {
+                        String json = ExportUtils.toJson(users);
+                        if (path.isEmpty()) {
+                            System.out.println("--- JSON ---\n" + json);
+                        } else {
+                            java.nio.file.Files.writeString(java.nio.file.Path.of(path), json);
+                            System.out.println("✅ JSON salvo em: " + path);
+                        }
+                    }
+                } catch (Exception ex) {
+                    System.out.println("❌ Erro ao exportar: " + ex.getMessage());
+                }
             }
         } catch (Exception e) {
             System.out.println("Erro ao obter preview: " + e.getMessage());
